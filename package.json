@@ -1,0 +1,18 @@
+{
+  "name": "xolder",
+  "version": "0.0.1",
+  "description": "Dolcer tictactoe challenge",
+  "main": "ws.js",
+  "scripts": {
+    "start": "node ws.js",
+    "test": "jest"
+  },
+  "author": "jide",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "jest": "^26.6.1"
+  }
+}
