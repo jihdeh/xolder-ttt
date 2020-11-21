@@ -1,4 +1,4 @@
-# Docler Tic-Tac-Toe
+# Tic-Tac-Toe
 
 
 ###### HOW TO PLAY
@@ -37,8 +37,5 @@ Horizontal Scaling.
 2. Introduce load balancing to handle websocket requests routing by using a proxy to route requests to the right backend server. We assume we have multiple servers here(scaling horizontally). But there is a problem here, what if a request starts an instance from one server but ends up being rerouted to another server. Each socket connection is bound to a specific instance, so we need to make sure that all the requests from specific users are forwarded to a particular backend. Also when the server breaks, there will be re-connection and it should go to the same server again. We can resolve this state problem by using sticky sessions
 3. Hyper scaling and cost-effective this means when there's alot of requests we should be able to horizontal scale-out and when there's not alot of requests we should be able to scale down gracefully. This can be achieved with kubenetes.
 
-###### Other Notes
 
-- Tests could have been improved to handle more cases
-- Scaling notes could have been deeply discussed on.
-- Due to my work, i could only work on this on a short time, could have been better.
+# Read more on scalability [here](scaling.md)
