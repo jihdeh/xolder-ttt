@@ -19,10 +19,21 @@ We could decide to scale vertically i.e increase the server capacity. from 1gb t
 When the server goes down, this means the users have lost the state of their game, and they now have to start all over again once the server is rebooted.
 To solve this we would need to introduce Strong consistency, this is because we want to automatically update the UI with the state the game was when they were playing before server went down.
 
-In our case, we could introduce using a database or to store the plays by each oponents probably by timestamp and the metadata of the game.
+In our case, we could introduce using a database or to store the plays by each oponents probably by timestamp and the data of the game. This data will be sent to the client and it can be parsed to display the game state.
+
 We can use a database like Prometheus, because this offers saving data based on time.
+
 We would configure our client side to send a notification to our backend with the last timestamp when the connection to the websock was lost.
 We would use the timestamp to check the latest result of the game, and send the updates to the UI via the websocket.
+
+"Smart" Sharding
+Since our timeseries data will be very large, we'll need to have some sharding in place.
+
+The natural approach is to shard based on zone: we can have the biggest zones(e.g china) in their individual shards, and we can have smaller zones grouped together in other shards.
+
+An important point to note here is that, over time, zones sizes will change. Some zones might double in size overnight, others might experience seemingly random surges of activity, etc.. This means that, despite our relatively sound sharding strategy, we might still run into hot spots, which is very bad considering the fact that we care about latency so much.
+
+To handle this, we can add a "smart" sharding solution: a subsystem of our system that'll asynchronously measure zone activity and "rebalance" shards accordingly. This service can be a strongly consistent key-value store like Etcd or ZooKeeper, mapping gameIds to shards. Our server will communicate with this service to know which shard to route requests to.
 
 ### 1M users per day
 
@@ -53,3 +64,23 @@ Each of these sub-zones will hold it's own (sub) domain, a load balancer and a n
 A divide and conquer strategy(tool: AWS Elastic Load Balancing)
 
 On the client side, we will want to implement an exponential backoff on the retry intervals to avoid overwhelming other nodes in the cluster (i.e [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem)).
+
+Pub/Sub System for Real-Time Behavior:
+
+The behavior that we want to support:
+Sending and receiving messages in real time.
+
+We can rely on a Pub/Sub messaging system, which itself will rely on our previously described "smart" sharding strategy.
+
+Every zone or group of zones will be assigned to a Kafka topic, and whenever a player in a game plays, our servers which handle speaking to our database, will also send a Pub/Sub message to the appropriate Kafka topic.
+
+We'll then have a different set of servers who subscribe to the various Kakfa topics (probably one server cluster per topic), and our clients (Players) will establish websocket/tcp connections with these server clusters to receive Pub/Sub messages in real time.
+
+We'll want a load balancer in between the clients and these servers, which will also use the "smart" sharding strategy to match clients with the appropriate servers, which will be listening to the appropriate Kafka topics.
+
+When clients receive Pub/Sub messages, they'll handle them accordingly (e.g display if there's a winner or draw).
+
+Since each Pub/Sub message comes with a timestamp, and since playing involves writing to our persistent storage, the Pub/Sub messages will effectively be idempotent operations.
+
+
+Regards,
