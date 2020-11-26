@@ -23,13 +23,25 @@ In our case, we could introduce using a database or to store the plays by each o
 
 We can use a database like Prometheus, because this offers saving data based on time.
 
+Our table could contain data like this for example:
+
+```json
+  {
+    "id": uuid,
+    "plays": [{position: 1, player: "x"}, {position: 3, player: "o"}],
+    "nextPlayerTurn: "x"
+    "time": DateTime
+  }
+  
+```
+
 We would configure our client side to send a notification to our backend with the last timestamp when the connection to the websock was lost.
 We would use the timestamp to check the latest result of the game, and send the updates to the UI via the websocket.
 
 "Smart" Sharding
 Since our timeseries data will be very large, we'll need to have some sharding in place.
 
-The natural approach is to shard based on zone: we can have the biggest zones(e.g china) in their individual shards, and we can have smaller zones grouped together in other shards.
+The natural approach is to shard based on zone: we can have the biggest zones(e.g Asia) in their individual shards, and we can have smaller zones grouped together in other shards.
 
 An important point to note here is that, over time, zones sizes will change. Some zones might double in size overnight, others might experience seemingly random surges of activity, etc.. This means that, despite our relatively sound sharding strategy, we might still run into hot spots, which is very bad considering the fact that we care about latency so much.
 
