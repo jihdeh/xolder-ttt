@@ -27,10 +27,10 @@ Our table could contain data like this for example:
 
 ```json
   {
-    "id": uuid,
-    "plays": [{position: 1, player: "x"}, {position: 3, player: "o"}],
+    "id": "uuid",
+    "plays": [{"position": 1, "player": "x"}, {"position": 3, "player": "o"}],
     "nextPlayerTurn: "x"
-    "time": DateTime
+    "time": "DateTime"
   }
   
 ```
