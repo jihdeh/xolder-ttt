@@ -30,7 +30,8 @@ Our table could contain data like this for example:
     "id": "uuid",
     "plays": [{"position": 1, "player": "x"}, {"position": 3, "player": "o"}],
     "nextPlayerTurn": "x",
-    "time": "DateTime"
+    "time": "DateTime",
+    "status": "Draw | hasWinner | None"
   }
   
 ```
