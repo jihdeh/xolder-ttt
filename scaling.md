@@ -94,5 +94,9 @@ When clients receive Pub/Sub messages, they'll handle them accordingly (e.g disp
 
 Since each Pub/Sub message comes with a timestamp, and since playing involves writing to our persistent storage, the Pub/Sub messages will effectively be idempotent operations.
 
+#### System Diagram
+
+![Architecture Image](scaling.png)
+
 
 Regards,
